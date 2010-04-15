@@ -75,7 +75,7 @@ package
 			_drawnFrames.push(bmp);
 		}
 		
-		// We have to do this on an enterFrame event, btw
+		// We have to do this on an enterFrame event btw,
 		// because _clip.gotoAndStop() doesn't update until
 		// the global playhead move & render happens
 		private function enterFrame(e:Event):void
