@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+	Copyright Wayne Marsh 2010 (http://marshgames.com/)
+	
+	This file is part of SWFToPNG.
+	
+	SWFToPNG is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	
+	SWFToPNG is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/halo"
+					   initialize="init()"
+					   width="432"
+					   height="160" 
+					   currentState="{_process.processing ? 'Processing' : 'Normal'}">
+	<s:states>
+		<s:State name="Normal"/>
+		<s:State name="Processing"/>
+	</s:states>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import flash.display.Loader;
+			import flash.events.Event;
+			import flash.events.TimerEvent;
+			import flash.media.SoundMixer;
+			import flash.media.SoundTransform;
+			import flash.net.FileFilter;
+			import flash.net.FileReference;
+			import flash.system.System;
+			import flash.utils.Timer;
+			
+			import mx.controls.Alert;
+			
+			private var _fileRef:FileReference = new FileReference;
+			private var _loader:Loader = new Loader;
+			
+			private var _directoryBrowse:File = new File;
+			
+			[Bindable]
+			private var _process:WriteProcess = new WriteProcess();
+			
+			private function init():void
+			{
+				_fileRef.addEventListener(Event.SELECT, fileSelect);
+				_fileRef.addEventListener(Event.COMPLETE, fileLoaded);
+				
+				_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadComplete);
+				
+				_directoryBrowse.addEventListener(Event.SELECT, directorySelect);
+				
+				// Turn off volume so we don't hear annoying clips playing
+				flash.media.SoundMixer.soundTransform = new SoundTransform(0);
+				
+				var t:Timer = new Timer(100);
+				t.addEventListener(TimerEvent.TIMER, function(e:Event):void
+				{
+					status = String(int(System.totalMemory / 1024 / 1024)) + "MB memory used";
+				});
+				t.start();
+			}
+			
+			private function directorySelect(e:Event):void
+			{
+				_process.processClip(MovieClip(_loader.content), _loader.contentLoaderInfo.width, _loader.contentLoaderInfo.height, _directoryBrowse.nativePath, TrimExtension(_fileRef.name, _fileRef.extension), crop.selected);
+			}
+			
+			private function loadComplete(e:Event):void
+			{
+				if (_loader.content is MovieClip)
+				{
+					_directoryBrowse.browseForDirectory("Choose a directory to save files to...");
+				}
+				else
+				{
+					Alert.show("You must load a SWF movie", "File error");
+				}
+			}
+			
+			private function fileLoaded(e:Event):void
+			{
+				var loaderContext:LoaderContext = new LoaderContext;
+				loaderContext.allowLoadBytesCodeExecution = true;
+				_loader.loadBytes(_fileRef.data, loaderContext);
+			}
+			
+			private function fileSelect(e:Event):void
+			{
+				_fileRef.load();
+			}
+			
+			private function open():void
+			{
+				_fileRef.browse([new FileFilter("SWF movies", "*.swf")]);
+			}
+			
+			private static function TrimExtension(name:String, extension:String):String
+			{
+				var i:int = name.indexOf("." + extension);
+				if (-1 != i)
+				{
+					name = name.substr(0, i);
+				}
+				
+				return name;
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Button x="10" y="10" label="Open SWF &amp; Convert" click="open()" includeIn="Normal"/>
+	<s:CheckBox x="171" y="10" label="Crop" id="crop" selected="true" includeIn="Normal"/>
+	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. swfName_1.png, swfName_2.png...)" height="57" width="412" x="10" y="39" textAlign="center" includeIn="Normal"/>
+	<mx:ProgressBar includeIn="Processing" left="10" right="10" top="10" label="Processing..." height="76" mode="polled" source="{_process}"/>
+	<s:Label includeIn="Normal" x="10" y="104" text="WARNING: Existing files will be overwritten" color="#FF0000" width="412" textAlign="center"/>
+</s:WindowedApplication>
