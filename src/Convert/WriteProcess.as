@@ -40,6 +40,8 @@ package Convert
 		
 		private var _centerRegMark:Boolean;
 		
+		private var _remaining:int;
+		
 		public function WriteProcess()
 		{
 		}
@@ -61,14 +63,9 @@ package Convert
 			
 			_centerRegMark = centerRegMark;
 			
-			_clip.addEventListener(Event.ENTER_FRAME, enterFrame); 
-
-			// Prevent the first frame of multi-frames being skipped
-			// due to some weird quirk of Flash logic
-			if (_clip.totalFrames > 1)
-			{
-				drawCurrentFrame();
-			}
+			_clip.addEventListener(Event.ENTER_FRAME, enterFrame);
+			
+			_remaining = _clip.totalFrames;
 			
 			_clip.play();
 			
@@ -87,11 +84,16 @@ package Convert
 		// because _clip.gotoAndStop() doesn't update until
 		// the global playhead move & render happens
 		private function enterFrame(e:Event):void
-		{	
-			drawCurrentFrame();
-			
-			if (_clip.currentFrame == _clip.totalFrames)
+		{						
+			if (_remaining-- > 0)
 			{
+				trace("draw", getQualifiedClassName(_clip), _clip.currentFrame);
+				drawCurrentFrame();
+			}
+			else
+			{
+				trace("write", getQualifiedClassName(_clip));
+				
 				if (_crop)
 				{
 					var regCenter:Point;
