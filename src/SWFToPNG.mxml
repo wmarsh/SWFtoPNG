@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--
-	Copyright Wayne Marsh 2010 (http://marshgames.com/)
-	
-	This file is part of SWFToPNG.
-	
-	SWFToPNG is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-	
-	SWFToPNG is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-	
-	You should have received a copy of the GNU General Public License
-	along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
+Copyright Wayne Marsh 2010 (http://marshgames.com/)
+
+This file is part of SWFToPNG.
+
+SWFToPNG is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SWFToPNG is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 -->
 
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/halo"
 					   initialize="init()"
-					   width="432"
+					   width="450"
 					   height="160" 
 					   currentState="{_process.processing ? 'Processing' : 'Normal'}">
 	<s:states>
@@ -36,15 +36,15 @@
 	
 	<fx:Script>
 		<![CDATA[
-			import flash.display.Loader;
-			import flash.events.Event;
-			import flash.events.TimerEvent;
-			import flash.media.SoundMixer;
-			import flash.media.SoundTransform;
-			import flash.net.FileFilter;
-			import flash.net.FileReference;
+			import Convert.WriteProcess;
+			
+			import flash.display.*;
+			import flash.events.*;
+			import flash.media.*;
+			import flash.net.*;
 			import flash.system.System;
 			import flash.utils.Timer;
+			import flash.utils.getQualifiedClassName;
 			
 			import mx.controls.Alert;
 			
@@ -56,6 +56,8 @@
 			[Bindable]
 			private var _process:WriteProcess = new WriteProcess();
 			
+			private var _processQueue:Array = [];
+			
 			private function init():void
 			{
 				_fileRef.addEventListener(Event.SELECT, fileSelect);
@@ -64,6 +66,8 @@
 				_loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadComplete);
 				
 				_directoryBrowse.addEventListener(Event.SELECT, directorySelect);
+				
+				_process.addEventListener(Event.COMPLETE, dispatchQueue);
 				
 				// Turn off volume so we don't hear annoying clips playing
 				flash.media.SoundMixer.soundTransform = new SoundTransform(0);
@@ -78,7 +82,53 @@
 			
 			private function directorySelect(e:Event):void
 			{
-				_process.processClip(MovieClip(_loader.content), _loader.contentLoaderInfo.width, _loader.contentLoaderInfo.height, _directoryBrowse.nativePath, TrimExtension(_fileRef.name, _fileRef.extension), crop.selected);
+				var movie:MovieClip = MovieClip(_loader.content);
+				
+				if (entireStage.selected)
+				{
+					_process.processClip(movie, 
+						_loader.contentLoaderInfo.width, 
+						_loader.contentLoaderInfo.height, 
+						_directoryBrowse.nativePath, 
+						TrimExtension(_fileRef.name, _fileRef.extension), 
+						crop.selected);
+				}
+				else
+				{
+					// Add each child to the process queue
+					for (var i:int = 0; i < movie.numChildren; i++)
+					{
+						var child:DisplayObject = movie.getChildAt(i);
+						
+						if (child is MovieClip)
+							_processQueue.push(child);
+					}
+					
+					if (_processQueue.length > 0)
+						processNext();
+				}
+			}
+			
+			private function dispatchQueue(e:Event):void
+			{
+				if (_processQueue.length > 0)
+					processNext();
+			}
+			
+			private function processNext():void
+			{
+				var next:MovieClip = _processQueue.pop();
+				
+				var name:String = getQualifiedClassName(next); 
+				
+				_process.processClip(next, 
+					_loader.contentLoaderInfo.width, 
+					_loader.contentLoaderInfo.height, 
+					_directoryBrowse.nativePath, 
+					name, 
+					crop.selected);
+				
+				progress.label = "Processing " + name + "..."; 
 			}
 			
 			private function loadComplete(e:Event):void
@@ -125,7 +175,8 @@
 	
 	<s:Button x="10" y="10" label="Open SWF &amp; Convert" click="open()" includeIn="Normal"/>
 	<s:CheckBox x="171" y="10" label="Crop" id="crop" selected="true" includeIn="Normal"/>
-	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. swfName_1.png, swfName_2.png...)" height="57" width="412" x="10" y="39" textAlign="center" includeIn="Normal"/>
-	<mx:ProgressBar includeIn="Processing" left="10" right="10" top="10" label="Processing..." height="76" mode="polled" source="{_process}"/>
-	<s:Label includeIn="Normal" x="10" y="104" text="WARNING: Existing files will be overwritten" color="#FF0000" width="412" textAlign="center"/>
+	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. swfName_1.png, swfName_2.png...)" height="57" width="430" x="10" y="39" textAlign="center" includeIn="Normal"/>
+	<mx:ProgressBar id="progress" includeIn="Processing" left="10" right="10" top="10" label="Processing..." height="76" mode="polled" source="{_process}"/>
+	<s:Label includeIn="Normal" x="10" y="104" text="WARNING: Existing files will be overwritten" color="#FF0000" width="430" textAlign="center"/>
+	<s:CheckBox includeIn="Normal" x="224" y="10" label="Entire stage only (old version mode)" id="entireStage" selected="false"/>
 </s:WindowedApplication>

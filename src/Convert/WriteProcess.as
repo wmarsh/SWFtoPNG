@@ -15,9 +15,10 @@
 //	You should have received a copy of the GNU General Public License
 //	along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 
-package 
+package Convert 
 {
 	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -70,7 +71,7 @@ package
 		private function drawCurrentFrame():void
 		{
 			var bmp:BitmapData = new BitmapData(_contentWidth, _contentHeight, true, 0);
-			bmp.draw(_clip);
+			bmp.draw(_clip, _clip.transform.matrix);
 			
 			_drawnFrames.push(bmp);
 		}
@@ -100,6 +101,8 @@ package
 				_drawnFrames = [];
 				
 				dispatchEvent(new Event("processingChanged", true, true));
+				
+				dispatchEvent(new Event(Event.COMPLETE, true, true));
 			}
 			
 			dispatchEvent(new Event("progressChanged", true, true));
