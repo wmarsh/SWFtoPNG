@@ -174,9 +174,12 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 	</fx:Script>
 	
 	<s:Button x="10" y="10" label="Open SWF &amp; Convert" click="open()" includeIn="Normal"/>
-	<s:CheckBox x="171" y="10" label="Crop" id="crop" selected="true" includeIn="Normal"/>
-	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. swfName_1.png, swfName_2.png...)" height="57" width="430" x="10" y="39" textAlign="center" includeIn="Normal"/>
+	
+	<s:CheckBox x="171" y="10" label="Crop" id="crop" toolTip="Crop out whitespace around graphic (recommended)" selected="true" includeIn="Normal"/>
+	<s:CheckBox includeIn="Normal" x="224" y="10" label="Entire stage" toolTip="Works on the entire stage instead of individual children on the stage, as in the original version of the software" id="entireStage" selected="false"/>
+
 	<mx:ProgressBar id="progress" includeIn="Processing" left="10" right="10" top="10" label="Processing..." height="76" mode="polled" source="{_process}"/>
+	
+	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. swfName_1.png, swfName_2.png...)" height="57" width="430" x="10" y="39" textAlign="center" includeIn="Normal"/>
 	<s:Label includeIn="Normal" x="10" y="104" text="WARNING: Existing files will be overwritten" color="#FF0000" width="430" textAlign="center"/>
-	<s:CheckBox includeIn="Normal" x="224" y="10" label="Entire stage only (old version mode)" id="entireStage" selected="false"/>
 </s:WindowedApplication>
