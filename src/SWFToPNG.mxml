@@ -180,6 +180,6 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 
 	<mx:ProgressBar id="progress" includeIn="Processing" left="10" right="10" top="10" label="Processing..." height="76" mode="polled" source="{_process}"/>
 	
-	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. swfName_1.png, swfName_2.png...)" height="57" width="430" x="10" y="39" textAlign="center" includeIn="Normal"/>
+	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. symbolName_1.png, symbolName_2.png...)" height="57" width="430" x="10" y="39" textAlign="center" includeIn="Normal"/>
 	<s:Label includeIn="Normal" x="10" y="104" text="WARNING: Existing files will be overwritten" color="#FF0000" width="430" textAlign="center"/>
 </s:WindowedApplication>
