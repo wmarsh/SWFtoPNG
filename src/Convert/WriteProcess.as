@@ -124,18 +124,11 @@ package Convert
 			var encoder:PNGEncoder = new PNGEncoder;
 			var encoded:ByteArray = encoder.encode(src);
 			
-			try
-			{					
-				var fileStream:FileStream = new FileStream();
-				fileStream.open(file, FileMode.WRITE);
-				fileStream.writeBytes(encoded, 0);
-				
-				fileStream.close();
-			}
-			catch (e:Error)
-			{
-				trace(e.message);
-			}
+			var fileStream:FileStream = new FileStream();
+			fileStream.open(file, FileMode.WRITE);
+			fileStream.writeBytes(encoded, 0);
+			
+			fileStream.close();
 		}
 		
 		private static function DisposeBitmaps(bitmaps:Array):void
