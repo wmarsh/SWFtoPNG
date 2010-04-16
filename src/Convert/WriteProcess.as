@@ -17,14 +17,10 @@
 
 package Convert 
 {
-	import flash.display.BitmapData;
-	import flash.display.DisplayObject;
-	import flash.display.MovieClip;
-	import flash.events.Event;
-	import flash.events.EventDispatcher;
-	import flash.filesystem.File;
-	import flash.filesystem.FileMode;
-	import flash.filesystem.FileStream;
+	import flash.display.*;
+	import flash.events.*;
+	import flash.filesystem.*;
+	import flash.geom.Point;
 	import flash.utils.ByteArray;
 	
 	import mx.graphics.codec.PNGEncoder;
@@ -41,11 +37,13 @@ package Convert
 		
 		private var _crop:Boolean;
 		
+		private var _centerRegMark:Boolean;
+		
 		public function WriteProcess()
 		{
 		}
 		
-		public function processClip(clip:MovieClip, width:int, height:int, outputPath:String, name:String, crop:Boolean):void
+		public function processClip(clip:MovieClip, width:int, height:int, outputPath:String, name:String, crop:Boolean, centerRegMark:Boolean):void
 		{
 			if (_clip) throw new Error("Already processing");
 			
@@ -59,6 +57,8 @@ package Convert
 			_name = name;
 			
 			_crop = crop;
+			
+			_centerRegMark = centerRegMark;
 			
 			_clip.addEventListener(Event.ENTER_FRAME, enterFrame);
 			
@@ -85,12 +85,15 @@ package Convert
 			
 			if (_clip.currentFrame == _clip.totalFrames)
 			{
-				_clip.removeEventListener(Event.ENTER_FRAME, enterFrame);
-				_clip = null;
-				
 				if (_crop)
 				{
-					var cropped:Array = CropBitmaps(_drawnFrames);
+					var regCenter:Point;
+					if (_centerRegMark)
+					{
+						regCenter = new Point(_clip.x, _clip.y);
+					}
+					
+					var cropped:Array = CropBitmaps(_drawnFrames, regCenter);
 					DisposeBitmaps(_drawnFrames);
 					_drawnFrames = cropped;
 				}
@@ -100,6 +103,8 @@ package Convert
 				DisposeBitmaps(_drawnFrames);
 				_drawnFrames = [];
 				
+				_clip.removeEventListener(Event.ENTER_FRAME, enterFrame);
+				_clip = null;
 				dispatchEvent(new Event("processingChanged", true, true));
 				
 				dispatchEvent(new Event(Event.COMPLETE, true, true));

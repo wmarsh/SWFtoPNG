@@ -17,13 +17,14 @@
 
 package Convert 
 {
+	import flash.geom.Point;
 	import flash.geom.Rectangle;
 
-	function CropBitmaps(bitmaps:Array):Array
+	function CropBitmaps(bitmaps:Array, rectCenter:Point):Array
 	{
 		var cropped:Array = [];
 		
-		var cropRect:Rectangle = FindBoundingRect(bitmaps);
+		var cropRect:Rectangle = FindBoundingRect(bitmaps, rectCenter);
 		
 		for (var i:int = 0; i < bitmaps.length; i++)
 		{
@@ -47,7 +48,7 @@ function CropBitmap(bitmap:BitmapData, cropRect:Rectangle):BitmapData
 	return cropped;
 }
 
-function FindBoundingRect(bitmaps:Array):Rectangle
+function FindBoundingRect(bitmaps:Array, rectCenter:Point):Rectangle
 {
 	var cropRect:Rectangle = new Rectangle;
 	
@@ -55,8 +56,28 @@ function FindBoundingRect(bitmaps:Array):Rectangle
 	{
 		var bounds:Rectangle = bmp.getColorBoundsRect(0xFF000000, 0, false);
 		
+		if (rectCenter) ExpandRectAboutCenter(bounds, rectCenter);
+		
 		cropRect = cropRect.union(bounds);
 	}
 	
 	return cropRect;
+}
+
+function ExpandRectAboutCenter(r:Rectangle, center:Point):void
+{
+	var horMax:Number = Math.max(
+		Math.abs(r.left - center.x), 
+		Math.abs(r.right - center.x)
+		);
+	
+	var verMax:Number = Math.max(
+		Math.abs(r.top - center.y), 
+		Math.abs(r.bottom - center.y)
+		);
+	
+	r.top = center.y - verMax;
+	r.bottom = center.y + verMax;
+	r.left = center.x - horMax;
+	r.right = center.x + horMax;
 }

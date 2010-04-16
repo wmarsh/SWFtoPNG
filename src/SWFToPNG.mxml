@@ -23,7 +23,7 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/halo"
 					   initialize="init()"
-					   width="450"
+					   width="502"
 					   height="160" 
 					   currentState="{_process.processing ? 'Processing' : 'Normal'}">
 	<s:states>
@@ -91,7 +91,8 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 						_loader.contentLoaderInfo.height, 
 						_directoryBrowse.nativePath, 
 						TrimExtension(_fileRef.name, _fileRef.extension), 
-						crop.selected);
+						crop.selected,
+						false);
 				}
 				else
 				{
@@ -126,7 +127,8 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 					_loader.contentLoaderInfo.height, 
 					_directoryBrowse.nativePath, 
 					name, 
-					crop.selected);
+					crop.selected,
+					centerRegistration.selected);
 				
 				progress.label = "Processing " + name + "..."; 
 			}
@@ -176,10 +178,11 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 	<s:Button x="10" y="10" label="Open SWF &amp; Convert" click="open()" includeIn="Normal"/>
 	
 	<s:CheckBox x="171" y="10" label="Crop" id="crop" toolTip="Crop out whitespace around graphic (recommended)" selected="true" includeIn="Normal"/>
-	<s:CheckBox includeIn="Normal" x="224" y="10" label="Entire stage" toolTip="Works on the entire stage instead of individual children on the stage, as in the original version of the software" id="entireStage" selected="false"/>
+	<s:CheckBox includeIn="Normal" x="224" y="10" id="centerRegistration" toolTip="Enable to center the registration point of the original movie clip in the output image. This extra whitespace will enable Zwoptex to generate an offset to match the reg point in the Flash designer, and won't take up space in the final spritesheet." label="Center registration points" enabled="{!entireStage.selected}" selected="true"/>
+	<s:CheckBox includeIn="Normal" x="385" y="10" label="Entire stage" toolTip="Works on the entire stage instead of individual children on the stage, as in the original version of the software" id="entireStage" selected="false" change="if (true) centerRegistration.selected = false"/>
 
 	<mx:ProgressBar id="progress" includeIn="Processing" left="10" right="10" top="10" label="Processing..." height="76" mode="polled" source="{_process}"/>
 	
-	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. symbolName_1.png, symbolName_2.png...)" height="57" width="430" x="10" y="39" textAlign="center" includeIn="Normal"/>
-	<s:Label includeIn="Normal" x="10" y="104" text="WARNING: Existing files will be overwritten" color="#FF0000" width="430" textAlign="center"/>
+	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. symbolName_1.png, symbolName_2.png...)" height="57" width="482" x="10" y="39" textAlign="center" includeIn="Normal"/>
+	<s:Label includeIn="Normal" x="10" y="104" text="WARNING: Existing files will be overwritten" color="#FF0000" width="482" textAlign="center"/>
 </s:WindowedApplication>
