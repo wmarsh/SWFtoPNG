@@ -22,6 +22,7 @@ package Convert
 	import flash.filesystem.*;
 	import flash.geom.Point;
 	import flash.utils.ByteArray;
+	import flash.utils.getQualifiedClassName;
 	
 	import mx.graphics.codec.PNGEncoder;
 	
@@ -60,9 +61,15 @@ package Convert
 			
 			_centerRegMark = centerRegMark;
 			
-			_clip.addEventListener(Event.ENTER_FRAME, enterFrame);
+			_clip.addEventListener(Event.ENTER_FRAME, enterFrame); 
+
+			// Prevent the first frame of multi-frames being skipped
+			// due to some weird quirk of Flash logic
+			if (_clip.totalFrames > 1)
+			{
+				drawCurrentFrame();
+			}
 			
-			drawCurrentFrame();
 			_clip.play();
 			
 			dispatchEvent(new Event("processingChanged", true, true));
