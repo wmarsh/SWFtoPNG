@@ -66,7 +66,7 @@ function FindBoundingRect(bitmaps:Array, rectCenter:Point):Rectangle
 
 function ExpandRectAboutCenter(r:Rectangle, center:Point):void
 {
-	var horMax:Number = Math.max(
+	var horMax:Number = Math.max( 
 		Math.abs(r.left - center.x), 
 		Math.abs(r.right - center.x)
 		);
@@ -77,7 +77,7 @@ function ExpandRectAboutCenter(r:Rectangle, center:Point):void
 		);
 	
 	r.top = center.y - verMax;
-	r.bottom = center.y + verMax;
+	r.bottom = center.y + verMax + 1;
 	r.left = center.x - horMax;
-	r.right = center.x + horMax;
+	r.right = center.x + horMax + 1;
 }
