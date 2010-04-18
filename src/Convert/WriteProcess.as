@@ -33,6 +33,7 @@ package Convert
 		private var _outputPath:String, _name:String;
 		
 		private var _drawnFrames:Array = [];
+		private var _frameNumbers:Array = [];
 		
 		private var _contentWidth:int, _contentHeight:int;
 		
@@ -59,6 +60,8 @@ package Convert
 			_outputPath = outputPath;
 			_name = name;
 			
+			_frameNumbers = [];
+			
 			_crop = crop;
 			
 			_centerRegMark = centerRegMark;
@@ -78,6 +81,7 @@ package Convert
 			bmp.draw(_clip, _clip.transform.matrix);
 			
 			_drawnFrames.push(bmp);
+			_frameNumbers.push(_clip.currentFrame);
 		}
 		
 		// We have to do this on an enterFrame event btw,
@@ -126,7 +130,7 @@ package Convert
 		{
 			for (var i:int = 0; i < _drawnFrames.length; i++)
 			{
-				writeFile(_drawnFrames[i], i + 1, _outputPath, _name);
+				writeFile(_drawnFrames[i], _frameNumbers[i], _outputPath, _name);
 			}
 		}
 		

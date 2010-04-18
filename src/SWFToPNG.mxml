@@ -60,6 +60,8 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 			
 			private function init():void
 			{
+				loaderHolder.rawChildren.addChild(_loader);
+				
 				_fileRef.addEventListener(Event.SELECT, fileSelect);
 				_fileRef.addEventListener(Event.COMPLETE, fileLoaded);
 				
@@ -174,6 +176,8 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 			}
 		]]>
 	</fx:Script>
+	
+	<mx:Canvas left="0" right="0" top="0" bottom="0" visible="false" id="loaderHolder"/>
 	
 	<s:Button x="10" y="10" label="Open SWF &amp; Convert" click="open()" includeIn="Normal"/>
 	
