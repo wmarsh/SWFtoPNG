@@ -77,7 +77,7 @@ function ExpandRectAboutCenter(r:Rectangle, center:Point):void
 		);
 	
 	r.top = center.y - verMax;
-	r.bottom = center.y + verMax + 1;
+	r.bottom = center.y + verMax;
 	r.left = center.x - horMax;
-	r.right = center.x + horMax + 1;
+	r.right = center.x + horMax;
 }
