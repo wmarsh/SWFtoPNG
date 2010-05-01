@@ -124,15 +124,22 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 				
 				var name:String = getQualifiedClassName(next); 
 				
-				_process.processClip(next, 
-					_loader.contentLoaderInfo.width, 
-					_loader.contentLoaderInfo.height, 
-					_directoryBrowse.nativePath, 
-					name, 
-					crop.selected,
-					centerRegistration.selected);
-				
-				progress.label = "Processing " + name + "..."; 
+				if (name.indexOf("flash.") == 0)
+				{
+					dispatchQueue(null);
+				}
+				else
+				{
+					_process.processClip(next, 
+						_loader.contentLoaderInfo.width, 
+						_loader.contentLoaderInfo.height, 
+						_directoryBrowse.nativePath, 
+						name, 
+						crop.selected,
+						centerRegistration.selected);
+					
+					progress.label = "Processing " + name + "..."; 
+				}
 			}
 			
 			private function loadComplete(e:Event):void
