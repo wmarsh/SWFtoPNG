@@ -43,11 +43,13 @@ package Convert
 		
 		private var _remaining:int;
 		
+		private var _digitPadding:uint;
+		
 		public function WriteProcess()
 		{
 		}
 		
-		public function processClip(clip:MovieClip, width:int, height:int, outputPath:String, name:String, crop:Boolean, centerRegMark:Boolean):void
+		public function processClip(clip:MovieClip, width:int, height:int, outputPath:String, name:String, crop:Boolean, centerRegMark:Boolean, digitPadding:uint):void
 		{
 			if (_clip) throw new Error("Already processing");
 			
@@ -65,6 +67,8 @@ package Convert
 			_crop = crop;
 			
 			_centerRegMark = centerRegMark;
+			
+			_digitPadding = digitPadding;
 			
 			_clip.addEventListener(Event.ENTER_FRAME, enterFrame);
 			
@@ -137,7 +141,7 @@ package Convert
 		private function writeFile(src:BitmapData, number:int, path:String, name:String):void
 		{
 			var file:File = new File;
-			file.nativePath = path + "/" + name + "_" + String(number) + ".png";
+			file.nativePath = path + "/" + name + "_" + ZeroPadNumber(number, _digitPadding) + ".png";
 			
 			var encoder:PNGEncoder = new PNGEncoder;
 			var encoded:ByteArray = encoder.encode(src);

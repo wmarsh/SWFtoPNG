@@ -24,7 +24,7 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 					   xmlns:mx="library://ns.adobe.com/flex/halo"
 					   initialize="init()"
 					   width="502"
-					   height="160" 
+					   height="180" 
 					   currentState="{_process.processing ? 'Processing' : 'Normal'}">
 	<s:states>
 		<s:State name="Normal"/>
@@ -36,7 +36,7 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 	
 	<fx:Script>
 		<![CDATA[
-			import Convert.WriteProcess;
+			import Convert.*;
 			
 			import flash.display.*;
 			import flash.events.*;
@@ -94,7 +94,8 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 						_directoryBrowse.nativePath, 
 						TrimExtension(_fileRef.name, _fileRef.extension), 
 						crop.selected,
-						false);
+						false,
+						padding.value);
 				}
 				else
 				{
@@ -136,7 +137,8 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 						_directoryBrowse.nativePath, 
 						name, 
 						crop.selected,
-						centerRegistration.selected);
+						centerRegistration.selected,
+						padding.value);
 					
 					progress.label = "Processing " + name + "..."; 
 				}
@@ -191,9 +193,13 @@ along with SWFToPNG.  If not, see <http://www.gnu.org/licenses/>.
 	<s:CheckBox x="171" y="10" label="Crop" id="crop" toolTip="Crop out whitespace around graphic (recommended)" selected="true" includeIn="Normal"/>
 	<s:CheckBox includeIn="Normal" x="224" y="10" id="centerRegistration" toolTip="Enable to center the registration point of the original movie clip in the output image. This extra whitespace will enable Zwoptex to generate an offset to match the reg point in the Flash designer, and won't take up space in the final spritesheet." label="Center registration points" enabled="{!entireStage.selected}" selected="true"/>
 	<s:CheckBox includeIn="Normal" x="385" y="10" label="Entire stage" toolTip="Works on the entire stage instead of individual children on the stage, as in the original version of the software" id="entireStage" selected="false" change="if (true) centerRegistration.selected = false"/>
-
+	
 	<mx:ProgressBar id="progress" includeIn="Processing" left="10" right="10" top="10" label="Processing..." height="76" mode="polled" source="{_process}"/>
 	
-	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images (e.g. symbolName_1.png, symbolName_2.png...)" height="57" width="482" x="10" y="39" textAlign="center" includeIn="Normal"/>
-	<s:Label includeIn="Normal" x="10" y="104" text="WARNING: Existing files will be overwritten" color="#FF0000" width="482" textAlign="center"/>
+	<s:Label text="Choose a SWF to open. A box will pop up asking you where to save to. After you choose this location the frames of the SWF will be written out as sequentially-numbered PNG images." height="41" width="482" x="10" y="89" textAlign="center" includeIn="Normal"/>
+	<s:Label includeIn="Normal" x="10" y="134" text="WARNING: Existing files will be overwritten" color="#FF0000" width="482" textAlign="center"/>
+	<s:NumericStepper includeIn="Normal" x="143" y="36" value="2" minimum="0" stepSize="1" id="padding" maximum="65535" width="53"/>
+	<s:Label includeIn="Normal" x="10" y="41.5" text="Filename digit padding:"/>
+	<s:Label includeIn="Normal" x="204" y="41.5" text="e.g. symbolName_{ZeroPadNumber(1, padding.value)}.png, symbolName_{ZeroPadNumber(2, padding.value)}.png,...,"/>
+	<s:Label x="204" y="56.5" text=" symbolName_{ZeroPadNumber(99, padding.value)}.png, symbolName_{ZeroPadNumber(100, padding.value)}.png" includeIn="Normal"/>
 </s:WindowedApplication>
